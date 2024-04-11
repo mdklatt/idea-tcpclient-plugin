@@ -2,9 +2,10 @@
 
 # TCP Client Plugin Changelog
 
-## [Unreleased]
+## [1.0.0-SNAPSHOT]
 
 ### Added
+- Initial commit
 
 ### Changed
 
@@ -15,5 +16,4 @@
 ### Fixed
 
 ### Security
-
 
