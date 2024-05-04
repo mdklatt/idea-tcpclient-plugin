@@ -1,7 +1,7 @@
 /**
- * Unit tests for TcpFile.kt.
+ * Unit tests for lang.TcpRequest.
  */
-package dev.mdklatt.idea.tcpclient.files
+package dev.mdklatt.idea.tcpclient.lang
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import kotlin.test.assertIs
@@ -10,16 +10,16 @@ import kotlin.test.assertIs
 /**
  * Unit tests for the TcpFileType class.
  */
-internal class TcpFileTypeTest : BasePlatformTestCase() {
+internal class TcpRequestFileTypeTest : BasePlatformTestCase() {
 
-    private lateinit var type: TcpFileType
+    private lateinit var type: TcpRequestFileType
 
     /**
      * Per-test setup
      */
     override fun setUp() {
         super.setUp()
-        type = TcpFileType()
+        type = TcpRequestFileType()
     }
 
     /**
@@ -62,6 +62,6 @@ internal class TcpFileTypeTest : BasePlatformTestCase() {
      */
     fun testFileType() {
         val file = myFixture.copyFileToProject("requests.tcp")
-        assertIs<TcpFileType>(file.fileType)
+        assertIs<TcpRequestFileType>(file.fileType)
     }
 }

@@ -1,8 +1,8 @@
-package dev.mdklatt.idea.tcpclient.files
+package dev.mdklatt.idea.tcpclient.lang
 
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.fileTypes.UserFileType
-import com.intellij.openapi.options.SettingsEditor
+import com.intellij.lang.Language
+import com.intellij.openapi.fileTypes.LanguageFileType
 
 
 /**
@@ -10,10 +10,10 @@ import com.intellij.openapi.options.SettingsEditor
  *
  * @see: <a href="https://plugins.jetbrains.com/docs/intellij/registering-file-type.html">Registering a File Type</a>
  */
-class TcpFileType: UserFileType<TcpFileType>() {
+class TcpRequestFileType: LanguageFileType(TcpRequestLanguage.INSTANCE) {
 
     companion object {
-        val INSTANCE = TcpFileType()
+        val INSTANCE = TcpRequestFileType()
     }
 
     /**
@@ -23,7 +23,7 @@ class TcpFileType: UserFileType<TcpFileType>() {
      *
      * @return: name
      */
-    override fun getName() = "TCP"
+    override fun getName() = "TCP Request"
 
     /**
      * Default file extension.
@@ -37,7 +37,7 @@ class TcpFileType: UserFileType<TcpFileType>() {
      *
      * @return: description
      */
-    override fun getDescription() = "TCP Request File"
+    override fun getDescription() = "TCP Request file"
 
     /**
      * Get the 16x16 file type icon.
@@ -46,19 +46,12 @@ class TcpFileType: UserFileType<TcpFileType>() {
      * @see <a href="https://www.jetbrains.org/intellij/sdk/docs/reference_guide/work_with_icons_and_images.html">Icons and Images</a>
      */
     override fun getIcon() = AllIcons.FileTypes.Custom
+}
 
 
-    /**
-     * Determine if file contains binary content.
-     *
-     * @return `false`
-     */
-    override fun isBinary() = false
+class TcpRequestLanguage: Language("TCP Request") {
 
-    /**
-     * Get an editor for this file type.
-     */
-    override fun getEditor(): SettingsEditor<TcpFileType> {
-        TODO("Not yet implemented")
+    companion object {
+        val INSTANCE = TcpRequestLanguage()
     }
 }

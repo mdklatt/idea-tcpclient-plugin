@@ -15,7 +15,13 @@
     <configurationType implementation="dev.mdklatt.idea.tcpclient.configurations.HelloConfigurationType"/>
     <applicationService serviceImplementation="dev.mdklatt.idea.tcpclient.services.MyApplicationService"/>
     <projectService serviceImplementation="dev.mdklatt.idea.tcpclient.services.MyProjectService"/>
-    <fileType name="TCP" implementationClass="dev.mdklatt.idea.tcpclient.files.TcpFileType" fieldName="INSTANCE" extensions="tcp"/>
+    <fileType
+        name="TCP Request"
+        language="TCP Request"
+        extensions="tcp"
+        implementationClass="dev.mdklatt.idea.tcpclient.lang.TcpRequestFileType"
+        fieldName="INSTANCE"
+    />
   </extensions>
 
   <applicationListeners>
