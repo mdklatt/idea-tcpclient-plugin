@@ -1,0 +1,30 @@
+{
+  parserClass="dev.mdklatt.idea.tcpclient.lang.TcpRequestParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="TcpRequest"
+  psiImplClassSuffix="Impl"
+  psiPackage="dev.mdklatt.idea.tcpclient.lang"
+  psiImplPackage="dev.mdklatt.idea.tcpclient.lang"
+
+  elementTypeHolderClass="dev.mdklatt.idea.tcpclient.lang.TcpRequestTypes"
+  elementTypeClass="dev.mdklatt.idea.tcpclient.lang.TcpRequestElementType"
+  tokenTypeClass="dev.mdklatt.idea.tcpclient.lang.TcpRequestTokenType"
+
+  tokens = [
+    RECV = "RECV"
+    SEND = "SEND"
+    SEP = "###"
+    space = "regexp:\s+"
+    comment = "regexp:#.*"
+    url = "regexp:tcp://([a-zA-Z._\-]+):([0-9]+)"
+    quoted = "regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
+  ]
+}
+
+
+root ::= line *
+private line ::= !<<eof>> (send | recv | SEP)
+private send ::= SEND url quoted SEP
+private recv ::= RECV url

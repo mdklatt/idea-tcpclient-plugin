@@ -3,6 +3,10 @@ package dev.mdklatt.idea.tcpclient.lang
 import com.intellij.icons.AllIcons
 import com.intellij.lang.Language
 import com.intellij.openapi.fileTypes.LanguageFileType
+import com.intellij.psi.tree.IElementType
+import org.jetbrains.annotations.NonNls
+
+
 
 
 /**
@@ -49,9 +53,31 @@ class TcpRequestFileType: LanguageFileType(TcpRequestLanguage.INSTANCE) {
 }
 
 
+/**
+ *
+ */
 class TcpRequestLanguage: Language("TCP Request") {
 
     companion object {
         val INSTANCE = TcpRequestLanguage()
     }
 }
+
+
+/**
+ *
+ */
+class TcpRequestTokenType(debugName: String) :
+    IElementType(debugName, TcpRequestLanguage.INSTANCE) {
+
+    override fun toString(): String {
+        return "TcpRequestTokenType." + super.toString()
+    }
+}
+
+
+/**
+ *
+ */
+class TcpRequestElementType(debugName: String) :
+    IElementType(debugName, TcpRequestLanguage.INSTANCE)
