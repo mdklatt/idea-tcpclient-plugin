@@ -22,6 +22,9 @@
         implementationClass="dev.mdklatt.idea.tcpclient.lang.TcpRequestFileType"
         fieldName="INSTANCE"
     />
+    <lang.parserDefinition
+            language="TCP Request"
+            implementationClass="dev.mdklatt.idea.tcpclient.lang.TcpRequestParserDefinition"/>
   </extensions>
 
   <applicationListeners>

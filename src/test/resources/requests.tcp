@@ -1,5 +1,5 @@
 SEND tcp://localhost:10000
 
-{"type": "status"}
+'{"type": "status"}''
 
 ###

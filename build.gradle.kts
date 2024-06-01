@@ -32,6 +32,9 @@ dependencies {
 }
 
 
+sourceSets["main"].java.srcDirs("src/main/gen")
+
+
 tasks {
 
     withType<JavaCompile> {

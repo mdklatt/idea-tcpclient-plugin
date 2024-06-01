@@ -1,12 +1,18 @@
 package dev.mdklatt.idea.tcpclient.lang
 
+import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.icons.AllIcons
+import com.intellij.lang.ASTNode
 import com.intellij.lang.Language
+import com.intellij.lang.ParserDefinition
+import com.intellij.lexer.FlexAdapter
 import com.intellij.openapi.fileTypes.LanguageFileType
+import com.intellij.openapi.project.Project
+import com.intellij.psi.FileViewProvider
+import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
-import org.jetbrains.annotations.NonNls
-
-
+import com.intellij.psi.tree.IFileElementType
+import com.intellij.psi.tree.TokenSet
 
 
 /**
@@ -81,3 +87,67 @@ class TcpRequestTokenType(debugName: String) :
  */
 class TcpRequestElementType(debugName: String) :
     IElementType(debugName, TcpRequestLanguage.INSTANCE)
+
+
+/**
+ *
+ */
+class TcpRequestLexerAdapter : FlexAdapter(TcpRequestLexer(null))
+
+
+/**
+ * 
+ */
+class TcpRequestFile(viewProvider: FileViewProvider) :
+    PsiFileBase(viewProvider, TcpRequestLanguage.INSTANCE) {
+
+    /**
+     *
+     */
+    override fun getFileType() = TcpRequestFileType.INSTANCE
+
+    /**
+     *
+     */
+    override fun toString() = "TCP Request File"
+}
+
+
+/**
+ * 
+ */
+interface TcpRequestTokenSets {
+    companion object {
+        val RECV = TokenSet.create(TcpRequestTypes.RECV)
+        val SEND = TokenSet.create(TcpRequestTypes.SEND)
+        val SEP = TokenSet.create(TcpRequestTypes.SEP)
+        val URL = TokenSet.create(TcpRequestTypes.URL)
+        val QUOTED = TokenSet.create(TcpRequestTypes.QUOTED)
+        val COMMENT = TokenSet.create(TcpRequestTypes.COMMENT)
+    }
+}
+
+
+/**
+ * 
+ */
+internal class TcpRequestParserDefinition : ParserDefinition {
+
+    override fun createLexer(project: Project?) = TcpRequestLexerAdapter()
+
+    override fun getCommentTokens(): TokenSet = TcpRequestTokenSets.COMMENT
+
+    override fun getStringLiteralElements(): TokenSet = TokenSet.EMPTY
+
+    override fun createParser(project: Project?) = TcpRequestParser()
+
+    override fun getFileNodeType() = FILE
+
+    override fun createFile(viewProvider: FileViewProvider) = TcpRequestFile(viewProvider)
+
+    override fun createElement(node: ASTNode?): PsiElement = TcpRequestTypes.Factory.createElement(node)
+
+    companion object {
+        val FILE = IFileElementType(TcpRequestLanguage.INSTANCE)
+    }
+}

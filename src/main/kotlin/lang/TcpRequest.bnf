@@ -1,16 +1,18 @@
 {
-  parserClass="dev.mdklatt.idea.tcpclient.lang.TcpRequestParser"
+  parserClass = "dev.mdklatt.idea.tcpclient.lang.TcpRequestParser"
 
-  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+  extends = "com.intellij.extapi.psi.ASTWrapperPsiElement"
 
-  psiClassPrefix="TcpRequest"
-  psiImplClassSuffix="Impl"
-  psiPackage="dev.mdklatt.idea.tcpclient.lang"
-  psiImplPackage="dev.mdklatt.idea.tcpclient.lang"
+  psiClassPrefix = "TcpRequest"
+  psiImplClassSuffix = "Impl"
+  psiPackage = "dev.mdklatt.idea.tcpclient.lang"
+  psiImplPackage = "dev.mdklatt.idea.tcpclient.lang"
 
-  elementTypeHolderClass="dev.mdklatt.idea.tcpclient.lang.TcpRequestTypes"
-  elementTypeClass="dev.mdklatt.idea.tcpclient.lang.TcpRequestElementType"
-  tokenTypeClass="dev.mdklatt.idea.tcpclient.lang.TcpRequestTokenType"
+  elementTypeHolderClass = "dev.mdklatt.idea.tcpclient.lang.TcpRequestTypes"
+  elementTypeClass = "dev.mdklatt.idea.tcpclient.lang.TcpRequestElementType"
+  tokenTypeClass = "dev.mdklatt.idea.tcpclient.lang.TcpRequestTokenType"
+
+  psiImplUtilClass="dev.mdklatt.idea.tcpclient.lang.TcpRequestPsiImplUtil"
 
   tokens = [
     RECV = "RECV"
@@ -24,7 +26,7 @@
 }
 
 
-root ::= line *
-private line ::= !<<eof>> (send | recv | SEP)
-private send ::= SEND url quoted SEP
-private recv ::= RECV url
+requestFile ::= item *
+private item ::= !<<eof>> (sendRequest | recvRequest | SEP)
+sendRequest ::= SEND url quoted
+recvRequest ::= RECV url
