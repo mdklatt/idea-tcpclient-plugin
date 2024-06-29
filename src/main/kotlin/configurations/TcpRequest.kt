@@ -19,27 +19,28 @@ import javax.swing.JComponent
 
 
 /**
- * Hello run configuration type.
+ * TcpRequest run configuration type.
  *
  * @see <a href="https://plugins.jetbrains.com/docs/intellij/run-configuration-management.html?from=jetbrains.org#configuration-type">Configuration Type</a>
  */
-class HelloConfigurationType : ConfigurationTypeBase(
-    "HelloConfigurationType",
-    "Hello",
-    "Display a greeting",
-    AllIcons.General.GearPlain
+class TcpRequestConfigurationType : ConfigurationTypeBase(
+    "TcpRequestConfigurationType",
+    "TcpRequest",
+    "Execute a TCP request",
+    AllIcons.RunConfigurations.Remote
 ) {
     init {
-        addFactory(HelloConfigurationFactory(this))
+        addFactory(TcpRequestConfigurationFactory(this))
     }
 }
 
+
 /**
- * Factory for HelloRunConfiguration instances.
+ * Factory for TcpRequestRunConfiguration instances.
  *
  * @see <a href="https://www.jetbrains.org/intellij/sdk/docs/basics/run_configurations/run_configuration_management.html#configuration-factory">Configuration Factory</a>
  */
-class HelloConfigurationFactory internal constructor(type: ConfigurationType) : ConfigurationFactory(type) {
+class TcpRequestConfigurationFactory internal constructor(type: ConfigurationType) : ConfigurationFactory(type) {
     /**
      * Creates a new template run configuration within the context of the specified project.
      *
@@ -47,7 +48,7 @@ class HelloConfigurationFactory internal constructor(type: ConfigurationType) : 
      * @return the run configuration instance.
      */
     override fun createTemplateConfiguration(project: Project) =
-        HelloRunConfiguration(project, this, "")
+        TcpRequestRunConfiguration(project, this, "")
 
     /**
      * Run configuration ID used for serialization.
@@ -61,16 +62,16 @@ class HelloConfigurationFactory internal constructor(type: ConfigurationType) : 
      *
      * @return: options class type
      */
-    override fun getOptionsClass() = HelloRunConfiguration.Options::class.java
+    override fun getOptionsClass() = TcpRequestRunConfiguration.Options::class.java
 }
 
 /**
- * Run configuration for printing "Hello, World!" to the console.
+ * Run configuration for printing "TcpRequest, World!" to the console.
  *
  * @see <a href="https://www.jetbrains.org/intellij/sdk/docs/basics/run_configurations/run_configuration_management.html#run-configuration">Run Configuration</a>
  */
-class HelloRunConfiguration internal constructor(project: Project, factory: ConfigurationFactory, name: String) :
-    RunConfigurationBase<HelloRunConfiguration.Options>(project, factory, name) {
+class TcpRequestRunConfiguration internal constructor(project: Project, factory: ConfigurationFactory, name: String) :
+    RunConfigurationBase<TcpRequestRunConfiguration.Options>(project, factory, name) {
  
     /**
      * Persistent run configuration options.
@@ -78,17 +79,24 @@ class HelloRunConfiguration internal constructor(project: Project, factory: Conf
      * @see <a href="https://plugins.jetbrains.com/docs/intellij/run-configurations.html#implement-a-configurationfactory">Run Configurations Tutorial</a>
      */
     class Options : RunConfigurationOptions() {
-        internal var subject by string()
+        internal var host by string()
+        internal var message by string()
     }
  
     override fun getOptions(): Options {
         return super.getOptions() as Options
     }
 
-    internal var subject: String
-        get() = options.subject ?: "World"
+    internal var host: String
+        get() = options.host ?: ""
         set(value) {
-            options.subject = value
+            options.host = value
+        }
+
+    internal var message: String
+        get() = options.message ?: ""
+        set(value) {
+            options.message = value
         }
 
     /**
@@ -99,7 +107,7 @@ class HelloRunConfiguration internal constructor(project: Project, factory: Conf
      *
      * @return the settings editor component.
      */
-    override fun getConfigurationEditor() = HelloSettingsEditor()
+    override fun getConfigurationEditor() = TcpRequestSettingsEditor()
 
     /**
      * Prepares for executing a specific instance of the run configuration.
@@ -109,7 +117,7 @@ class HelloRunConfiguration internal constructor(project: Project, factory: Conf
      * @return the RunProfileState describing the process which is about to be started, or null if it's impossible to start the process.
      */
     override fun getState(executor: Executor, environment: ExecutionEnvironment) =
-        HelloCommandLineState(this, environment)
+        TcpRequestState(this, environment)
 }
 
 
@@ -120,20 +128,22 @@ class HelloRunConfiguration internal constructor(project: Project, factory: Conf
  * @param environment: execution environment
  * @see <a href="https://plugins.jetbrains.com/docs/intellij/run-configurations.html#implement-a-run-configuration">Run Configurations Tutorial</a>
  */
-class HelloCommandLineState internal constructor(private val config: HelloRunConfiguration, environment: ExecutionEnvironment) :
+class TcpRequestState internal constructor(private val config: TcpRequestRunConfiguration, environment: ExecutionEnvironment) :
     CommandLineState(environment) {
+
+    //private val config = environment.runnerAndConfigurationSettings?.configuration as TcpRequestRunConfiguration
+
 
     /**
      * Start the external process.
      *
      * @return the handler for the running process
      * @throws ExecutionException if the execution failed.
-     * @see GeneralCommandLine
      *
-     * @see com.intellij.execution.process.OSProcessHandler
      */
     override fun startProcess(): ProcessHandler {
-        val command = GeneralCommandLine("echo", "Hello, ${config.subject}!")
+        // TODO: Implement the
+        val command = GeneralCommandLine("echo", "TcpRequest for  ${config.host}")
         return KillableColoredProcessHandler(command).also {
             ProcessTerminatedListener.attach(it, environment.project)
         }
@@ -142,13 +152,14 @@ class HelloCommandLineState internal constructor(private val config: HelloRunCon
 
 
 /**
- * UI component for Hello Run Configuration settings.
+ * UI component for TcpRequest Run Configuration settings.
  *
  * @see <a href="https://www.jetbrains.org/intellij/sdk/docs/basics/run_configurations/run_configuration_management.html#settings-editor">Settings Editor</a>
  */
-class HelloSettingsEditor internal constructor() : SettingsEditor<HelloRunConfiguration>() {
+class TcpRequestSettingsEditor internal constructor() : SettingsEditor<TcpRequestRunConfiguration>() {
 
-    internal var subject = ""
+    internal var host = ""
+    internal var message = ""
 
     /**
      * Create the widget for this editor.
@@ -158,7 +169,8 @@ class HelloSettingsEditor internal constructor() : SettingsEditor<HelloRunConfig
     override fun createEditor(): JComponent {
        // https://plugins.jetbrains.com/docs/intellij/kotlin-ui-dsl-version-2.html
        return panel {
-            row("Subject:") { textField().bindText(::subject) }
+            row("Host:") { textField().bindText(::host) }
+            row("Message:") { textField().bindText(::message) }
         }
     }
 
@@ -167,10 +179,11 @@ class HelloSettingsEditor internal constructor() : SettingsEditor<HelloRunConfig
      *
      * @param config: run configuration
      */
-    override fun resetEditorFrom(config: HelloRunConfiguration) {
+    override fun resetEditorFrom(config: TcpRequestRunConfiguration) {
         // Update bound properties from config then reset UI.
         config.let {
-            subject = it.subject
+            host = it.host
+            message = it.message
         }
         (this.component as DialogPanel).reset()
        return
@@ -181,11 +194,12 @@ class HelloSettingsEditor internal constructor() : SettingsEditor<HelloRunConfig
      *
      * @param config: run configuration
      */
-    override fun applyEditorTo(config: HelloRunConfiguration) {
+    override fun applyEditorTo(config: TcpRequestRunConfiguration) {
         // Apply UI to bound properties then update config.
         (this.component as DialogPanel).apply()
         config.let {
-            it.subject = subject
+            it.host = host
+            it.message = message
         }
         return
     }
