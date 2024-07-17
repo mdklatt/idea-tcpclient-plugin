@@ -5,13 +5,13 @@ package dev.mdklatt.idea.tcpclient.configurations
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultRunExecutor
+import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import org.jdom.Element
-import kotlin.io.path.Path
 
 
 /**
@@ -178,10 +178,9 @@ class TcpRequestSettingsEditorTest : BasePlatformTestCase() {
  */
 internal class TcpRequestStateTest: BasePlatformTestCase() {
 
-    private val host = "portal.dev.okmeso.net:10000"
-    private val message = "{\"type\": \"status\"}"
     private lateinit var configuration: TcpRequestRunConfiguration
     private lateinit var state: TcpRequestState
+    private lateinit var environment: ExecutionEnvironment
 
     /**
      * Per-test initialization.
@@ -191,11 +190,14 @@ internal class TcpRequestStateTest: BasePlatformTestCase() {
         val factory = TcpRequestConfigurationFactory(TcpRequestConfigurationType())
         val settings = RunManager.getInstance(project).createConfiguration("TCP Request Test", factory)
         configuration = (settings.configuration as TcpRequestRunConfiguration).also {
-            it.host = host
-            it.message = message
+            it.host = "www.example.com:80"
+            it.message = """
+                GET / HTTP/1.1\r
+                \r
+            """.trimIndent()
         }
         val executor = DefaultRunExecutor.getRunExecutorInstance()
-        val environment = ExecutionEnvironmentBuilder.create(executor, settings).build()
+        environment = ExecutionEnvironmentBuilder.create(executor, settings).build()
         state = TcpRequestState(configuration, environment)
     }
 
@@ -205,8 +207,7 @@ internal class TcpRequestStateTest: BasePlatformTestCase() {
     fun testExec() {
         // This uses the default test installation, which is a local Python
         // virtualenv (see AnsibleCommandLineStateTest).
-        val env = state.environment
-        state.execute(env.executor, env.runner).processHandler.let {
+        state.execute(environment.executor, environment.runner).processHandler.let {
             it.startNotify()
             it.waitFor()
             assertEquals(0, it.exitCode)

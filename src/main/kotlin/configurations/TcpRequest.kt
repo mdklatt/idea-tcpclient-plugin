@@ -3,18 +3,28 @@
  */
 package dev.mdklatt.idea.tcpclient.configurations
 
+import com.intellij.execution.DefaultExecutionResult
+import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.*
-import com.intellij.execution.process.KillableColoredProcessHandler
+import com.intellij.execution.filters.TextConsoleBuilderFactory
+import com.intellij.execution.process.NopProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.execution.runners.ProgramRunner
+import com.intellij.execution.ui.ConsoleView
+import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
+import com.intellij.openapi.util.Key
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
+import dev.mdklatt.idea.tcpclient.tcp.TcpClient
+import java.io.OutputStream
 import javax.swing.JComponent
 
 
@@ -64,6 +74,7 @@ class TcpRequestConfigurationFactory internal constructor(type: ConfigurationTyp
      */
     override fun getOptionsClass() = TcpRequestRunConfiguration.Options::class.java
 }
+
 
 /**
  * Run configuration for printing "TcpRequest, World!" to the console.
@@ -122,31 +133,37 @@ class TcpRequestRunConfiguration internal constructor(project: Project, factory:
 
 
 /**
- * Command line process for executing the run configuration.
+ * Process for executing a TcpRequestRunConfiguration.
  *
  * @param config: run configuration
  * @param environment: execution environment
  * @see <a href="https://plugins.jetbrains.com/docs/intellij/run-configurations.html#implement-a-run-configuration">Run Configurations Tutorial</a>
  */
-class TcpRequestState internal constructor(private val config: TcpRequestRunConfiguration, environment: ExecutionEnvironment) :
-    CommandLineState(environment) {
+class TcpRequestState(
+    private val runConfiguration: TcpRequestRunConfiguration,
+    private val environment: ExecutionEnvironment
+) : RunProfileState {
 
-    //private val config = environment.runnerAndConfigurationSettings?.configuration as TcpRequestRunConfiguration
-
+    private val consoleBuilder = TextConsoleBuilderFactory.getInstance().createBuilder(environment.project)
 
     /**
-     * Start the external process.
+     * Execute a run configuration.
      *
-     * @return the handler for the running process
-     * @throws ExecutionException if the execution failed.
-     *
+     * @param executor
+     * @param programRunner
+     * @return execution result
      */
-    override fun startProcess(): ProcessHandler {
-        // TODO: Implement the
-        val command = GeneralCommandLine("echo", "TcpRequest for  ${config.host}")
-        return KillableColoredProcessHandler(command).also {
+    override fun execute(executor: Executor?, programRunner: ProgramRunner<*>): ExecutionResult {
+        val (host, port) = runConfiguration.host.split(":", limit = 2)
+        val client = TcpClient(host, port.toInt())
+        client.send(runConfiguration.message.encodeToByteArray())
+        val response = client.recv().decodeToString()
+        val console = consoleBuilder.console
+        console.print(response, ConsoleViewContentType.NORMAL_OUTPUT)
+        val processHandler = NopProcessHandler().also {
             ProcessTerminatedListener.attach(it, environment.project)
         }
+        return DefaultExecutionResult(console, processHandler)
     }
 }
 
